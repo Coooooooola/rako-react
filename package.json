@@ -1,0 +1,19 @@
+{
+  "name": "rabbit-store-react",
+  "version": "0.1.0",
+  "main": "src/Injector.js",
+  "repository": "https://github.com/rabbitmeow/rabbit-store-react.git",
+  "author": "rabbit <rabbitmeow886@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "babel-preset-env": "^1.7.0",
+    "jest": "^23.6.0"
+  },
+  "dependencies": {
+    "rabbit-store": "^0.1.0",
+    "react": "^16.5.2"
+  }
+}
