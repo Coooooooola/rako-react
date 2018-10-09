@@ -1,6 +1,6 @@
 {
   "name": "rabbit-store-react",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "main": "src/Injector.js",
   "repository": "https://github.com/rabbitmeow/rabbit-store-react.git",
   "author": "rabbit <rabbitmeow886@gmail.com>",
