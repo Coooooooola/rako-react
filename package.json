@@ -1,7 +1,7 @@
 {
   "name": "rabbit-store-react",
-  "version": "0.0.1",
-  "main": "src/Injector.js",
+  "version": "0.0.2",
+  "main": "src/Prop.js",
   "repository": "https://github.com/rabbitmeow/rabbit-store-react.git",
   "author": "rabbit <rabbitmeow886@gmail.com>",
   "license": "MIT",
