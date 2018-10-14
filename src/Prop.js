@@ -39,9 +39,11 @@ function unsubscribe() {
 }
 
 Prop.assign = function (...props) {
-  if (!props.every(prop => prop instanceof Prop)) {
-    throw new TypeError('Prop.assign props: type is invalid -- expected a prop but got :' + (prop == null ? prop : typeof prop) + '.')
-  }
+  props.forEach(prop => {
+    if (!(prop instanceof Prop)) {
+      throw new TypeError('Prop.assign props: type is invalid -- expected a prop but got :' + (prop == null ? prop : typeof prop) + '.')
+    }
+  })
   const state = {
     value: Object.assign({}, ...props.map(prop => prop[$$value])),
     instances: [],
