@@ -2746,9 +2746,9 @@ qs@~6.5.2:
   version "6.5.2"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.2.tgz#cb3ae806e8740444584ef154ce8ee98d403f3e36"
 
-rabbit-store@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/rabbit-store/-/rabbit-store-0.1.0.tgz#948787e958734e0dda73655f03439028b7695b1d"
+rabbit-store@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/rabbit-store/-/rabbit-store-0.1.1.tgz#0982bc098b5142b608fc34709ad879c8667c226f"
 
 randomatic@^3.0.0:
   version "3.1.0"
