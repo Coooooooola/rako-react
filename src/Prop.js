@@ -12,7 +12,7 @@ class Prop {
     if (typeof mapper !== 'function') {
       throw new TypeError('Prop mapper: type is invalid -- expected a function but got :' + (mapper == null ? mapper : typeof mapper) + '.')
     }
-    const updater = store.getUpdaters()
+    const updater = store.getUpdater()
     this[$$value] = mapper(store.getState(), updater)
     this[$$listeners] = []
     store.subscribe(state => {
