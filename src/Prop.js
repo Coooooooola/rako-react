@@ -2,15 +2,15 @@ import Store from "rabbit-store"
 import React from "react"
 
 const $$value = Symbol ? Symbol('value') : '(value)-rabbit-2333'
-const $$listeners = Symbol ? Symbol('listeners') : '(value)-rabbit-2334'
+const $$listeners = Symbol ? Symbol('listeners') : '(listeners)-rabbit-2334'
 
 class Prop {
   constructor(store, mapper = (state, updater) => Object.assign({}, state, updater)) {
     if (!(store instanceof Store)) {
-      throw new TypeError('')
+      throw new TypeError('Prop store: type is invalid -- expected a Store but got :' + (store == null ? store : typeof store) + '.')
     }
     if (typeof mapper !== 'function') {
-      throw new TypeError('')
+      throw new TypeError('Prop mapper: type is invalid -- expected a function but got :' + (mapper == null ? mapper : typeof mapper) + '.')
     }
     const updater = store.getUpdaters()
     this[$$value] = mapper(store.getState(), updater)
@@ -25,25 +25,22 @@ class Prop {
 
 function update(value) {
   this.value = Object.assign(this.value, value)
-  this.instances.forEach(instance => {
-    instance.isUpToDate = false
-  })
   this.instances.forEach(instance => instance.update())
 }
 
 function unsubscribe() {
   if (!this.isScheduledUnsubscribe) {
     this.isScheduledUnsubscribe = true
-    requestAnimationFrame(() => {
+    requestIdleCallback(() => {
       this.instances = this.instances.filter(instance => !instance.isUnmounted)
       this.isScheduledUnsubscribe = false
     })
   }
 }
 
-Prop.merge = function (...props) {
+Prop.assign = function (...props) {
   if (!props.every(prop => prop instanceof Prop)) {
-    throw new TypeError('')
+    throw new TypeError('Prop.assign props: type is invalid -- expected a prop but got :' + (prop == null ? prop : typeof prop) + '.')
   }
   const state = {
     value: Object.assign({}, ...props.map(prop => prop[$$value])),
@@ -54,23 +51,19 @@ Prop.merge = function (...props) {
   state.unsubscribe = unsubscribe.bind(state)
   props.forEach(prop => prop[$$listeners].push(update.bind(state)))
 
-  return function (Component, pure = true) {
+  return function (Component) {
     if (typeof Component !== 'function') {
-      throw new TypeError('')
+      throw new TypeError('Component: type is invalid -- expected a function or React.Component but got :' + (Component == null ? Component : typeof Component) + '.')
     }
-    if (typeof pure !== 'boolean' && typeof pure !== 'function') {
-      throw new TypeError('')
-    }
-    
+
     return class $Prop extends React.Component {
       constructor(_props) {
         super(_props)
         this.isUnmounted = false
-        this.isUpToDate = true
         state.instances.push(this)
       }
       update() {
-        if (!this.isUnmounted && !this.isUpToDate) {
+        if (!this.isUnmounted) {
           this.forceUpdate()
         }
       }
@@ -79,7 +72,6 @@ Prop.merge = function (...props) {
         state.unsubscribe()
       }
       render() {
-        this.isUpToDate = true
         return React.createElement(Component, Object.assign({}, state.value, this.props))
       }
     }
