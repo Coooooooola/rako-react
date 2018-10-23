@@ -1,8 +1,8 @@
 {
-  "name": "rabbit-store-react",
-  "version": "0.0.7",
+  "name": "rako-react",
+  "version": "0.1.0",
   "main": "src/Prop.js",
-  "repository": "https://github.com/rabbitmeow/rabbit-store-react.git",
+  "repository": "https://github.com/rabbitmeow/rako-react.git",
   "author": "rabbit <rabbitmeow886@gmail.com>",
   "license": "MIT",
   "scripts": {
@@ -13,7 +13,12 @@
     "jest": "^23.6.0"
   },
   "dependencies": {
-    "rabbit-store": "^0.1.2",
+    "rako": "^0.1.3",
     "react": "^16.5.2"
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/?!(react-icons)"
+    ]
   }
 }

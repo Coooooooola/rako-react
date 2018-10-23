@@ -1,80 +1,123 @@
-import Store from "rabbit-store"
+import Store from "rako"
 import React from "react"
 
-const $$value = Symbol ? Symbol('value') : '(value)-rabbit-2333'
-const $$listeners = Symbol ? Symbol('listeners') : '(listeners)-rabbit-2334'
+const $$recalcs = Symbol('recalcs')
+const $$renderer = Symbol('renderer')
+const $$value = Symbol('value')
+
+class Renderer {
+  constructor(store) {
+    if (!(store instanceof Store)) {
+      throw new TypeError('Expected store to be an instance of Store.')
+    }
+    this.listeners = []
+    this.instances = []
+    store.subscribe(this.render.bind(this))
+  }
+  subscribe(listener) {
+    this.listeners.push(listener)
+  }
+  connect(instance) {
+    this.instances.push(instance)
+  }
+  render(state) {
+    this.listeners.forEach(listener => listener(state))
+
+    this.instances.forEach(instance => {
+      instance.isExpire = true
+    })
+    this.instances.forEach(instance => instance.update())
+  }
+}
+const disconnector = {
+  renderers: [],
+  isScheduled: false,
+  disconnect(...renderers) {
+    this.renderers.push(...renderers)
+    if (!this.isScheduled) {
+      this.isScheduled = true
+      const clear = () => {
+        this.renderers.forEach(renderer => {
+          renderer.instances = renderer.instances.filter(instance => !instance.isUnmount)
+        })
+        this.renderers.length = 0
+        this.isScheduled = false
+      }
+      if (requestIdleCallback) {
+        requestIdleCallback(clear)
+      } else {
+        setTimeout(clear, 100);
+      }
+    }
+  }
+}
+Renderer.disconnect = disconnector.disconnect
+
+function createRenderer(store) {
+  if (createRenderer.map.has(store)) {
+    return createRenderer.map.get(store)
+  }
+  const renderer = new Renderer(store)
+  createRenderer.map.set(store, renderer)
+  return renderer
+}
+createRenderer.map = new Map()
 
 class Prop {
   constructor(store, mapper = (state, updater) => Object.assign({}, state, updater)) {
-    if (!(store instanceof Store)) {
-      throw new TypeError('Prop store: type is invalid -- expected a Store but got :' + (store == null ? store : typeof store) + '.')
-    }
+    this[$$renderer] = createRenderer(store)
     if (typeof mapper !== 'function') {
-      throw new TypeError('Prop mapper: type is invalid -- expected a function but got :' + (mapper == null ? mapper : typeof mapper) + '.')
+      throw new TypeError('Expected mapper to be a function.')
     }
     const updater = store.getUpdater()
     this[$$value] = mapper(store.getState(), updater)
-    this[$$listeners] = []
-    store.subscribe(state => {
-      const value = mapper(state, updater)
-      this[$$value] = value
-      this[$$listeners].forEach(listener => listener(value))
+    this[$$recalcs] = []
+    this[$$renderer].subscribe(state => {
+      this[$$value] = mapper(state, updater)
+      this[$$recalcs].forEach(recalc => recalc(this[$$value]))
     })
   }
 }
 
-function update(value) {
-  this.value = Object.assign(this.value, value)
-  this.instances.forEach(instance => instance.update())
-}
-
-function unsubscribe() {
-  if (!this.isScheduledUnsubscribe) {
-    this.isScheduledUnsubscribe = true
-    requestIdleCallback(() => {
-      this.instances = this.instances.filter(instance => !instance.isUnmounted)
-      this.isScheduledUnsubscribe = false
-    })
-  }
-}
-
-Prop.assign = function (...props) {
-  props.forEach(prop => {
-    if (!(prop instanceof Prop)) {
-      throw new TypeError('Prop.assign props: type is invalid -- expected a prop but got :' + (prop == null ? prop : typeof prop) + '.')
+Prop.assign = function (...values) {
+  const props = []
+  const objects = []
+  values.forEach(value => {
+    if (value instanceof Prop) {
+      props.push(value)
+    } else if (typeof value === 'object') {
+      objects.push(value)
+    } else {
+      throw new TypeError('Expected values to be an object or an instance of Prop.')
     }
   })
-  const state = {
-    value: Object.assign({}, ...props.map(prop => prop[$$value])),
-    instances: [],
-    isScheduledUnsubscribe: false,
-    unsubscribe: null
-  }
-  state.unsubscribe = unsubscribe.bind(state)
-  props.forEach(prop => prop[$$listeners].push(update.bind(state)))
+
+  const value = Object.assign({}, ...objects, ...props.map(prop => prop[$$value]))
+  const recalc = subValue => Object.assign(value, subValue)
+  props.forEach(prop => prop[$$recalcs].push(recalc))
+  const renderers = props.map(prop => prop[$$renderer])
 
   return function (Component) {
-    if (typeof Component !== 'function') {
-      throw new TypeError('Component: type is invalid -- expected a function or React.Component but got :' + (Component == null ? Component : typeof Component) + '.')
-    }
-
-    return class $Prop extends React.Component {
+    return class $Proper extends React.Component {
       constructor(_props) {
         super(_props)
-        this.isUnmounted = false
-        state.instances.push(this)
+        this.isExpire = false
+        this.isUnmount = false
+        renderers.forEach(renderer => renderer.connect(this))
+        this.renderers = renderers
+      }
+      componentWillUnmount() {
+        this.isUnmount = true
+        Renderer.disconnect(...this.renderers)
       }
       update() {
-        if (!this.isUnmounted) {
+        if (!this.isUnmount && this.isExpire) {
           this.forceUpdate()
         }
       }
-      componentWillUnmount() {
-        this.isUnmounted = true
-        state.unsubscribe()
-      }
       render() {
-        return React.createElement(Component, Object.assign({}, state.value, this.props))
+        this.isExpire = false
+        return React.createElement(Component, Object.assign({}, value, this.props))
       }
     }
   }

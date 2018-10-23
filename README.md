@@ -1,1 +1,2 @@
-# rabbit-store-react
+# rako-react
+
