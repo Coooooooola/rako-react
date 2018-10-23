@@ -51,7 +51,7 @@ const disconnector = {
     }
   }
 }
-Renderer.disconnect = disconnector.disconnect
+Renderer.disconnect = disconnector.disconnect.bind(disconnector)
 
 function createRenderer(store) {
   if (createRenderer.map.has(store)) {
