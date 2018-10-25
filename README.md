@@ -9,7 +9,7 @@
 
 ### `new Prop(store: Store, mapper: function?)`
 
-### `Prop.assign(...props: Array<Prop|object>): function`
+### `Prop.assign(...values: Array<Prop|object>): function`
 
 ## Demo
 
