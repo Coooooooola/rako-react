@@ -107,6 +107,8 @@ Prop.assign = function (...values) {
         super(_props)
         this.isExpire = false
         this.isUnmount = false
+      }
+      componentDidMount() {
         renderers.forEach(renderer => renderer.connect(this))
       }
       componentWillUnmount() {
