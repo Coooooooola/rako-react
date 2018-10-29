@@ -30,7 +30,7 @@ const disconnector = {
         this.isScheduled = false
         const renderersArray = [...this.renderers.values()]
         renderersArray.forEach(renderer => {
-          renderer.instances = renderer.instances.filter(instance => !instance.isUnmount)
+          renderer.instances = renderer.instances.filter(({isMounting}) => isMounting)
         })
         this.renderers.clear()
       }

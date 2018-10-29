@@ -69,16 +69,17 @@ function assign(...values) {
       constructor(_props) {
         super(_props)
         this.isExpire = false
-        this.isUnmount = false
-        // It can work well in sync rendering but async rendering. React doesn't provide enought API.
+        this.isMounting = true
+        // It can work properly in sync rendering but async rendering. React doesn't provide enought APIs.
+        // It can be resolved in a complicated way, but I am not going to implement that until React team gives me a feedback.
         renderers.forEach(renderer => renderer.connect(this))
       }
       componentWillUnmount() {
-        this.isUnmount = true
+        this.isMounting = false
         disconnect(renderers)
       }
       update() {
-        if (!this.isUnmount && this.isExpire) {
+        if (this.isMounting && this.isExpire) {
           this.forceUpdate()
         }
       }

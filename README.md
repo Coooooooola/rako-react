@@ -7,7 +7,7 @@
 
 ## API
 
-#### `prop(store: Store, mapper: function?)`
+#### `prop(store: Store, mapper: function?): Prop`
 - ##### `mapper(state: object, updater: object): object`
 
 `mapper` default is `(state, updater) => Object.assign({}, state, updater)`.
