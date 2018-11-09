@@ -8,32 +8,32 @@
 ## API
 
 #### `prop(store: Store, mapper: function?): Prop`
-- ##### `mapper(state: object, updater: object): object`
+- ##### `mapper(state: object, actions: object): object`
 
-`mapper` default is `(state, updater) => Object.assign({}, state, updater)`.
+`mapper` default is `(state, actions) => Object.assign({}, state, actions)`.
 
 #### `assign(...values: Array<Prop|Store|object>): function`
 
 ## Demo
 
-````js
+```js
 import {createStores} from 'rako'
 import {prop, assign} from 'rako-react'
 
 const {profile$, bank$} = createStores({profile, bank})
-````
+```
 
 With decorator:
-````js
+```js
 @assign(
   prop(profile$, state => state),
   bank$
 )
 class App extends React.Component {}
-````
+```
 
 Without decorator:
-````js
+```js
 class App extends React.Component {}
 
 export default assign(
@@ -43,7 +43,7 @@ export default assign(
 ````
 
 Assign values to a function component:
-````js
+```js
 function App(props) {
   // TODO
 }
@@ -51,7 +51,7 @@ App = assign(
   prop(profile$, state => state),
   bank$
 )(App)
-````
+```
 
 
 example link: https://codesandbox.io/s/011136qpkn

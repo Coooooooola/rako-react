@@ -2,7 +2,14 @@ class Renderer {
   constructor(store) {
     this.listeners = []
     this.instances = []
-    store.subscribe(this.render.bind(this))
+    store.subscribe(state => {
+      this.listeners.forEach(listener => listener(state))
+    
+      this.instances.forEach(instance => {
+        instance.isExpire = true
+      })
+      this.instances.forEach(instance => instance.update())
+    })
   }
   subscribe(listener) {
     this.listeners.push(listener)
@@ -10,15 +17,8 @@ class Renderer {
   connect(instance) {
     this.instances.push(instance)
   }
-  render(state) {
-    this.listeners.forEach(listener => listener(state))
-
-    this.instances.forEach(instance => {
-      instance.isExpire = true
-    })
-    this.instances.forEach(instance => instance.update())
-  }
 }
+
 const disconnector = {
   renderers: new Set(),
   isScheduled: false,
@@ -28,8 +28,7 @@ const disconnector = {
       this.isScheduled = true
       const clear = () => {
         this.isScheduled = false
-        const renderersArray = [...this.renderers.values()]
-        renderersArray.forEach(renderer => {
+        this.renderers.forEach(renderer => {
           renderer.instances = renderer.instances.filter(({isMounting}) => isMounting)
         })
         this.renderers.clear()

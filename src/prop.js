@@ -7,12 +7,12 @@ const $$private = Symbol ? Symbol('private') : '(private)'
 class Prop {
   constructor(store, mapper) {
     const renderer = createRenderer(store)
-    const updater = store.getUpdater()
-    const value = mapper(store.getState(), updater)
+    const actions = store.getActions()
+    const value = mapper(store.getState(), actions)
     const calcs = []
     const _private = {renderer, value, calcs}
     renderer.subscribe(state => {
-      _private.value = mapper(state, updater)
+      _private.value = mapper(state, actions)
       calcs.forEach(calc => calc(_private.value))
     })
     this[$$private] = _private
@@ -21,7 +21,7 @@ class Prop {
 
 
 const map = new Map()
-const defaultMapper = (state, updater) => Object.assign({}, state, updater)
+const defaultMapper = (state, actions) => Object.assign({}, state, actions)
 
 function prop(store, mapper = defaultMapper) {
   if (!(store instanceof Store)) {
@@ -40,6 +40,7 @@ function prop(store, mapper = defaultMapper) {
   }
   return new Prop(store, mapper)
 }
+
 
 function assign(...values) {
   const props = []
