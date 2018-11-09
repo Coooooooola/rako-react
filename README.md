@@ -18,39 +18,30 @@
 
 ```js
 import {createStores} from 'rako'
-import {prop, assign} from 'rako-react'
+import {assign} from 'rako-react'
 
-const {profile$, bank$} = createStores({profile, bank})
+const {counter$} = createStores({counter})
 ```
 
 With decorator:
 ```js
-@assign(
-  prop(profile$, state => state),
-  bank$
-)
-class App extends React.Component {}
+@assign(counter$)
+class Counter extends React.Component {}
 ```
 
 Without decorator:
 ```js
-class App extends React.Component {}
+class Counter extends React.Component {}
 
-export default assign(
-  prop(profile$, state => state),
-  bank$
-)(App)
+export default assign(counter$)(Counter)
 ````
 
 Assign values to a function component:
 ```js
-function App(props) {
+function Counter(props) {
   // TODO
 }
-App = assign(
-  prop(profile$, state => state),
-  bank$
-)(App)
+Counter = assign(counter$)(Counter)
 ```
 
 
