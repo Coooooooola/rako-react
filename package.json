@@ -1,6 +1,6 @@
 {
   "name": "rako-react",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "main": "src",
   "repository": "https://github.com/rabbitmeow/rako-react.git",
   "author": "rabbit <rabbitmeow886@gmail.com>",
@@ -13,7 +13,7 @@
     "jest": "^23.6.0"
   },
   "dependencies": {
-    "rako": "^0.2.2",
+    "rako": "^0.2.3",
     "react": "^16.5.2"
   },
   "jest": {
