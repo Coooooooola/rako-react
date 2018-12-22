@@ -2746,10 +2746,10 @@ qs@~6.5.2:
   version "6.5.2"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.2.tgz#cb3ae806e8740444584ef154ce8ee98d403f3e36"
 
-rako@^0.2.3:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/rako/-/rako-0.2.3.tgz#fc9cbf3a8fbb79df420882d8d0a17c9764821523"
-  integrity sha512-Y6k4Vyn6tczn+RgMLcs0fLMKVBKgFkgFfT3d925UVfY0ZcjnHPHKyJima1M2inTTqQccpIagHxdh86TNIxyvxQ==
+rako@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/rako/-/rako-0.3.0.tgz#f3026dfbdf3af4bf0270e55aac64bea9425a11d6"
+  integrity sha512-5viOLJJYx0wT0jqKrDS8vrcFDG0338HEoo3K5GOafK/Tfs3XxNL50MYd64xsT7gxYYubXlWH6KA+MO6IFxTnNg==
 
 randomatic@^3.0.0:
   version "3.1.0"

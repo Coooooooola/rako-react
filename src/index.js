@@ -1,6 +1,2 @@
-import {prop, assign} from "./prop"
-
-export {
-  prop,
-  assign
-}
+export {prop} from './prop'
+export {assign, memoAssign} from './assign'

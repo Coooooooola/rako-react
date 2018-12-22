@@ -20,38 +20,45 @@ After you open the link of **codeSandbox** above, because **codeSandbox** doesn'
 
 ```js
 import {createStores} from 'rako'
-import {assign, prop} from 'rako-react'
+import {assign, memoAssign, prop} from 'rako-react'
 
-const {storeA$, storeB$} = createStores({storeA, storeB})
+const [profileStore, themeStore] = createStores(profile, theme)
 ```
-Inject `storeA$`'s __state__ and `storeB$`'s __state and action__ into React component `App`.
+Inject `profileStore`'s __state__ and `themeStore`'s __state and action__ into React component `App`.
 
-With decorator:
-```js
-@assign(
-  prop(storeA$, state => state),
-  storeB$
-)
-class App extends React.Component {}
-```
-
-Without decorator:
 ```js
 class App extends React.Component {}
 
 App = assign(
-  prop(storeA$, state => state),
-  storeB$
+  {title: 'example'},
+  profileStore, // `profileStore` will be wrapped automatically to
+                // `prop(profileStore, (state, actions) => Object.assign({}, state, actions))`
+  prop(themeStore, state => state)
 )(App)
 ```
-`prop`'s second parameter is `mapper`, default is `(state, actions) => Object.assign({}, state, actions)`.
+You can also use `memoAssign` to optimize performance.
+```js
+class App extends React.Component {}
+
+App = memoAssign((newvalue, oldvalue) => {
+  // TODO: Return a boolean, update if return false, otherwise return true.
+})(
+  {title: 'example'},
+  profileStore,
+  prop(themeStore, state => state)
+)(App)
+```
+
 
 
 ## API
 
-#### `prop(store: Store, mapper: function?): Prop`
-- ##### `mapper(state: object, actions: object): object`
+#### `prop(store: Store, mapper: function): connector`
+`mapper(state: object, actions: object): object`
 
-`mapper` default is `(state, actions) => Object.assign({}, state, actions)`.
+#### `assign(...values: Array<Store|connector|object>): function`
 
-#### `assign(...values: Array<Prop|Store|object>): function`
+#### `memoAssign(isEqual: function?): assign`
+`isEqual(newvalue, oldvalue): boolean`
+
+`isEqual` default is `shallowEqual`.
