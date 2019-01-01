@@ -7,7 +7,7 @@ import {sortByOrder, defaultMapper, getOrder, uniqueFlag} from './utils'
 
 class Assigner {
   constructor(isEqual, values) {
-    this.updateId = 0
+    this.renderId = 0
     this.value = undefined
     this.instances = []
     this.candidates = []
@@ -51,12 +51,15 @@ class Assigner {
   calculate(subvalue) {
     const oldvalue = this.value
     this.value = Object.freeze(Object.assign({}, oldvalue, subvalue))
-    this.updateId += 1
-    const ret = this.isEqual(this.value, oldvalue)
-    if (typeof ret !== 'boolean') {
+    const result = this.isEqual(this.value, oldvalue)
+    if (typeof result !== 'boolean') {
       throw new TypeError('Expected returned value from `isEqual` to be a boolean.')
     }
-    return ret ? null : this
+    if (result) {
+      return null
+    }
+    this.renderId += 1
+    return this
   }
   arrange() {
     if (!this.isScheduled) {
@@ -86,11 +89,11 @@ class Assigner {
       constructor(props) {
         super(props)
         this.isUnmounted = false
-        this.updateId = undefined
+        this.renderId = undefined
         this.order = getOrder()
       }
       update() {
-        if (!this.isUnmounted && this.updateId !== context.updateId) {
+        if (!this.isUnmounted && this.renderId !== context.renderId) {
           this.forceUpdate()
         }
       }
@@ -104,7 +107,7 @@ class Assigner {
         context.arrange()
       }
       render() {
-        this.updateId = context.updateId
+        this.renderId = context.renderId
         return React.createElement(Component, Object.assign({}, context.value, this.props))
       }
     }

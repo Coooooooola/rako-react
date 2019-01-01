@@ -40,8 +40,8 @@ You can also use `memoAssign` to optimize performance.
 ```js
 class App extends React.Component {}
 
-App = memoAssign((newvalue, oldvalue) => {
-  // TODO: Return a boolean. Update if return false, otherwise return true.
+App = memoAssign(function isEqual(newvalue, oldvalue) {
+  // TODO: Return a boolean. Render if return false.
 })(
   {title: 'example'},
   profileStore,
