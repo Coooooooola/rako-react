@@ -2,7 +2,7 @@ import Store from 'rako'
 import React from 'react'
 import {scheduleArrange} from './scheduler'
 import {getStoreAgent} from './StoreAgent'
-import {prop} from './prop'
+import {link} from './link'
 import {sortByOrder, defaultMapper, getOrder, uniqueFlag} from './utils'
 
 class Assigner {
@@ -16,28 +16,31 @@ class Assigner {
     this.requireClean = false
 
     const objects = []
-    const connectors = []
+    const linkers = []
     values.forEach(value => {
       if (value instanceof Store) {
-        connectors.push(prop(value, defaultMapper))
+        linkers.push(link(value, defaultMapper))
       } else if (typeof value === 'function') {
-        connectors.push(value)
+        linkers.push(value)
       } else if (typeof value === 'object') {
         objects.push(value)
       } else {
-        throw new TypeError('`assign`: Expected each value in `values` to be an object, store or `connector`.')
+        throw new TypeError('`assign`: Expected each value in `values` to be an object, a store or a `linker`.')
       }
     })
 
-    const stores = new Array(connectors.length)
-    connectors.forEach((connector, index) => {
-      connector((flag, store, mapper) => {
-        if (flag !== uniqueFlag) {
-          throw new Error('`assign`: Don\'t pass any function except `connector` to `assign`.')
+    const stores = new Array(linkers.length)
+    linkers.forEach((linker, index) => {
+      const flag = linker((flag, store, mapper) => {
+        if (flag === uniqueFlag) {
+          stores[index] = store
+          objects.push(getStoreAgent(store).connect(this, mapper))
+          return uniqueFlag
         }
-        stores[index] = store
-        objects.push(getStoreAgent(store).connect(this, mapper))
       })
+      if (flag !== uniqueFlag) {
+        throw new TypeError('`assign`: Expected each value in `values` to be an object, a store or a `linker`.')
+      }
     })
     if (stores.length !== new Set(stores).size) {
       throw new Error('`assign`: Don\'t pass duplicate `store` to `assign`.')

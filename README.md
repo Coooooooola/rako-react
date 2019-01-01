@@ -20,7 +20,7 @@ After you open the link of **codeSandbox** above, because **codeSandbox** doesn'
 
 ```js
 import {createStores} from 'rako'
-import {assign, memoAssign, prop} from 'rako-react'
+import {assign, memoAssign, link} from 'rako-react'
 
 const [profileStore, themeStore] = createStores(profile, theme)
 ```
@@ -32,8 +32,8 @@ class App extends React.Component {}
 App = assign(
   {title: 'example'},
   profileStore, // `profileStore` will be wrapped automatically to
-                // `prop(profileStore, (state, actions) => Object.assign({}, state, actions))`
-  prop(themeStore, state => state)
+                // `link(profileStore, (state, actions) => Object.assign({}, state, actions))`
+  link(themeStore, state => state)
 )(App)
 ```
 You can also use `memoAssign` to optimize performance.
@@ -41,11 +41,11 @@ You can also use `memoAssign` to optimize performance.
 class App extends React.Component {}
 
 App = memoAssign((newvalue, oldvalue) => {
-  // TODO: Return a boolean, update if return false, otherwise return true.
+  // TODO: Return a boolean. Update if return false, otherwise return true.
 })(
   {title: 'example'},
   profileStore,
-  prop(themeStore, state => state)
+  link(themeStore, state => state)
 )(App)
 ```
 
@@ -53,10 +53,10 @@ App = memoAssign((newvalue, oldvalue) => {
 
 ## API
 
-#### `prop(store: Store, mapper: function): connector`
+#### `link(store: Store, mapper: function): linker`
 `mapper(state: object, actions: object): object`
 
-#### `assign(...values: Array<Store|connector|object>): function`
+#### `assign(...values: Array<Store|linker|object>): function`
 
 #### `memoAssign(isEqual: function?): assign`
 `isEqual(newvalue, oldvalue): boolean`
