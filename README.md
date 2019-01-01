@@ -54,11 +54,9 @@ App = memoAssign((newvalue, oldvalue) => {
 ## API
 
 #### `link(store: Store, mapper: function): linker`
-`mapper(state: object, actions: object): object`
+> `mapper(state: object, actions: object): object`
 
 #### `assign(...values: Array<Store|linker|object>): function`
 
-#### `memoAssign(isEqual: function?): assign`
-`isEqual(newvalue, oldvalue): boolean`
-
-`isEqual` default is `shallowEqual`.
+#### `memoAssign(isEqual: function = shallowEqual): assign`
+> `isEqual(newvalue: object, oldvalue: object): boolean`
