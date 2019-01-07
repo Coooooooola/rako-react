@@ -1,32 +1,26 @@
-import {scheduleRender} from './scheduler'
 import {getCalculator} from './utils'
+import ReactDOM from 'react-dom'
 
 class StoreAgent {
   constructor(store) {
     this.state = store.getState()
     this.actions = store.getActions()
-    this.isScheduled = false
     this.calculates = []
 
     store.subscribe(state => {
       this.state = state
-      const assigners = this.calculates.map(calculate => calculate(state, this.actions)).filter(assigner => !!assigner)
-      this.render(assigners)
+      ReactDOM.unstable_batchedUpdates(() => {
+        this.calculates
+          .map(calculate => calculate(state, this.actions))
+          .filter(render => !!render)
+          .forEach(render => render())
+      })
     })
   }
   connect(assigner, mapper) {
     const calculator = getCalculator(mapper)
     this.calculates.push((state, actions) => assigner.calculate(calculator(state, actions)))
     return calculator(this.state, this.actions)
-  }
-  render(assigners) {
-    if (!this.isScheduled && assigners.length) {
-      this.isScheduled = true
-      scheduleRender(() => {
-        this.isScheduled = false
-        return assigners
-      })
-    }
   }
 }
 

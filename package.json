@@ -1,6 +1,6 @@
 {
   "name": "rako-react",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "main": "src",
   "repository": "https://github.com/rabbitmeow/rako-react.git",
   "author": "rabbit <rabbitmeow886@gmail.com>",
@@ -14,7 +14,8 @@
   },
   "dependencies": {
     "rako": "^0.3.0",
-    "react": "^16.5.2"
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0"
   },
   "jest": {
     "transformIgnorePatterns": [

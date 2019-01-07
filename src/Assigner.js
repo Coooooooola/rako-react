@@ -1,19 +1,16 @@
 import Store from 'rako'
 import React from 'react'
-import {scheduleArrange} from './scheduler'
+import {scheduleClean} from './cleaner'
 import {getStoreAgent} from './StoreAgent'
 import {link} from './link'
-import {sortByOrder, defaultMapper, getOrder, uniqueFlag} from './utils'
+import {defaultMapper, uniqueFlag} from './utils'
 
 class Assigner {
   constructor(isEqual, values) {
-    this.renderId = 0
     this.value = undefined
     this.instances = []
-    this.candidates = []
     this.isEqual = isEqual
     this.isScheduled = false
-    this.requireClean = false
 
     const objects = []
     const linkers = []
@@ -55,59 +52,39 @@ class Assigner {
     if (typeof result !== 'boolean') {
       throw new TypeError('Expected returned value from `isEqual` to be a boolean.')
     }
-    if (result) {
-      return null
-    }
-    this.renderId += 1
-    return this
+    return result ? null : this.render.bind(this)
   }
-  arrange() {
+  render() {
+    this.instances.forEach(instance => {
+      if (!instance.isUnmounted) {
+        instance.forceUpdate()
+      }
+    })
+  }
+  clean() {
     if (!this.isScheduled) {
       this.isScheduled = true
-      scheduleArrange(() => {
+      scheduleClean(() => {
         this.isScheduled = false
-
-        if (this.requireClean) {
-          if (this.candidates.length) {
-            this.candidates = this.candidates.filter(candidate => !candidate.isUnmounted)
-          }
-          if (this.instances.length) {
-            this.instances = this.instances.filter(instance => !instance.isUnmounted)
-          }
-          this.requireClean = false
-        }
-        if (this.candidates.length) {
-          this.instances.push(...this.candidates.sort(sortByOrder))
-          this.candidates.length = 0
-        }
+        context.instances = context.instances.filter(instance => !instance.isUnmounted)
       })
     }
   }
   hoc(Component) {
     const context = this
-    return class $Assigner extends React.Component {
+    return class Assigner extends React.Component {
       constructor(props) {
         super(props)
         this.isUnmounted = false
-        this.renderId = undefined
-        this.order = getOrder()
-      }
-      update() {
-        if (!this.isUnmounted && this.renderId !== context.renderId) {
-          this.forceUpdate()
-        }
       }
       componentWillUnmount() {
         this.isUnmounted = true
-        context.requireClean = true
-        context.arrange()
+        context.clean()
       }
       componentDidMount() {
-        context.candidates.push(this)
-        context.arrange()
+        context.instances.push(this)
       }
       render() {
-        this.renderId = context.renderId
         return React.createElement(Component, Object.assign({}, context.value, this.props))
       }
     }
