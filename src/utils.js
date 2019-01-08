@@ -12,14 +12,16 @@ function getCalculator(mapper) {
   }
 }
 
-function _is(x, y) {
+function __is(x, y) {
   if (x === y) {
     return x !== 0 || 1 / x === 1 / y
   } else {
     return x !== x && y !== y
   }
 }
-const is = Object.is || _is
+const _is = Object.is || __is
+
+const _hasOwnProperty = Object.hasOwnProperty
 
 function shallowEqual(object1, object2) {
   const keys1 = Object.keys(object1)
@@ -27,7 +29,7 @@ function shallowEqual(object1, object2) {
   if (keys1.length !== Object.keys(object2).length) {
     return false
   }
-  return keys1.every(key => key in object2 && is(object1[key], object2[key]))
+  return keys1.every(key => _hasOwnProperty.call(object2, key) && _is(object1[key], object2[key]))
 }
 
 const uniqueFlag = Object.freeze({})
