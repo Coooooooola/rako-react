@@ -66,7 +66,7 @@ class Assigner {
       this.isScheduled = true
       scheduleClean(() => {
         this.isScheduled = false
-        context.instances = context.instances.filter(instance => !instance.isUnmounted)
+        this.instances = this.instances.filter(instance => !instance.isUnmounted)
       })
     }
   }
