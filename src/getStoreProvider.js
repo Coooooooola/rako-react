@@ -24,7 +24,7 @@ function getStoreProvider(...storeContexts) {
     }
     render() {
       return storeContexts.reduceRight(
-        (wrapped, wrapper) => createElement(wrapper._Provider, wrapper._storeValue, wrapped),
+        (wrapped, wrapper) => createElement(wrapper.Provider, wrapper._storeValue, wrapped),
         this.props.children
       )
     }
