@@ -1,2 +1,2 @@
-export {link} from './link'
-export {assign, memoAssign} from './assign'
+export {default as createStoreContexts} from './createStoreContexts'
+export {default as getStoreProvider} from './getStoreProvider'
