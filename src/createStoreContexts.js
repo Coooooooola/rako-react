@@ -23,7 +23,7 @@ function createStoreContexts(...stores) {
       context._storeValue = {value: Object.assign({}, state, actions)}
       context._storeProviders.forEach(sp => sp.forceUpdate())
     })
-    return storeContext
+    return context
   })
 }
 
