@@ -11,19 +11,22 @@ function createStoreContexts(...stores) {
   return stores.map(({getState, getActions, subscribe}) => {
     const actions = getActions()
 
-    const context = createContext()
-    Object.assign(context, {
+    const storeContext = Object.assign(createContext(), {
       $$typeofStoreContext,
       StoreProvider: null,
+      _Provider: null,
       _storeValue: {value: Object.assign({}, getState(), actions)},
-      _storeProviders: [],
+      _updates: [],
     })
-    context.StoreProvider = getStoreProvider(context)
+    storeContext._Provider = storeContext.Provider
+    storeContext.Provider = undefined
+    storeContext.StoreProvider = getStoreProvider(storeContext)
+
     subscribe(({state}) => {
-      context._storeValue = {value: Object.assign({}, state, actions)}
-      context._storeProviders.forEach(sp => sp.forceUpdate())
+      storeContext._storeValue = {value: Object.assign({}, state, actions)}
+      storeContext._updates.forEach(update => update(bool => !bool))
     })
-    return context
+    return storeContext
   })
 }
 
