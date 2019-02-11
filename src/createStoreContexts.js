@@ -22,9 +22,11 @@ function createStoreContexts(...stores) {
     storeContext.Provider = undefined
     storeContext.StoreProvider = getStoreProvider(storeContext)
 
-    subscribe(({state}) => {
+    subscribe(function renderStoreContext({state}) {
       storeContext._storeValue = {value: Object.assign({}, state, actions)}
-      storeContext._updates.forEach(update => update(bool => !bool))
+      for (const update of storeContext._updates) {
+        update(bool => !bool)
+      }
     })
     return storeContext
   })

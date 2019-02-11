@@ -9,16 +9,20 @@ function getStoreProvider(...storeContexts) {
     const [, update] = useState(true)
     const storeValues = useMemo(() => storeContexts.map(sc => sc._storeValue), [])
 
-    useLayoutEffect(() => {
-      storeContexts.forEach(sc => sc._updates.push(update))
+    useLayoutEffect(function connectStoreContext() {
+      for (const {_updates} of storeContexts) {
+        _updates.push(update)
+      }
 
       if (storeContexts.some((sc, i) => sc._storeValue !== storeValues[i])) {
         update(bool => !bool)
       }
       storeValues.length = 0
 
-      return () => {
-        storeContexts.forEach(({_updates}) => _updates.splice(_updates.indexOf(update)))
+      return function cleanStoreContext() {
+        for (const {_updates} of storeContexts) {
+          _updates.splice(_updates.indexOf(update))
+        }
       }
     }, [])
 
