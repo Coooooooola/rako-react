@@ -3,7 +3,7 @@ import {$$typeofStoreContext} from './createStoreContexts'
 
 function getStoreProvider(...storeContexts) {
   if (storeContexts.some(sc => sc.$$typeofStoreContext !== $$typeofStoreContext)) {
-    throw new TypeError('`getStoreProvider`: Expected every `storeContext` to be a `StoreContext`.')
+    throw new TypeError('Expected every `storeContext` to be a `StoreContext`.')
   }
   return function StoreProvider({children}) {
     const [, update] = useState(true)
@@ -21,7 +21,7 @@ function getStoreProvider(...storeContexts) {
 
       return function cleanStoreContext() {
         for (const {_updates} of storeContexts) {
-          _updates.splice(_updates.indexOf(update))
+          _updates.splice(_updates.indexOf(update), 1)
         }
       }
     }, [])

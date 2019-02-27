@@ -6,7 +6,7 @@ const $$typeofStoreContext = Symbol ? Symbol('store-context') : {}
 
 function createStoreContexts(...stores) {
   if (!stores.every(store => store instanceof Store)) {
-    throw new TypeError('`createStoreContexts`: Expected every `store` to be a `Store`.')
+    throw new TypeError('Expected every `store` to be a `Store`.')
   }
   return stores.map(({getState, getActions, subscribe}) => {
     const actions = getActions()
@@ -22,7 +22,7 @@ function createStoreContexts(...stores) {
     storeContext.Provider = undefined
     storeContext.StoreProvider = getStoreProvider(storeContext)
 
-    subscribe(function renderStoreContext({state}) {
+    subscribe(function renderStoreContext(state) {
       storeContext._storeValue = {value: Object.assign({}, state, actions)}
       for (const update of storeContext._updates) {
         update(bool => !bool)
