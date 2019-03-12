@@ -26,10 +26,12 @@ function getStoreProvider(...storeContexts) {
       }
     }, [])
 
-    return storeContexts.reduceRight(
-      (wrapped, wrapper) => createElement(wrapper._Provider, wrapper._storeValue, wrapped),
-      children
-    )
+    let ret = children
+    for (let i = storeContexts.length - 1; i >= 0; i--) {
+      const sc = storeContexts[i]
+      ret = createElement(sc._Provider, sc._storeValue, ret)
+    }
+    return ret
   }
 }
 
