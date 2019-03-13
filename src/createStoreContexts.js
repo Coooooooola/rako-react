@@ -34,7 +34,6 @@ function createStoreContexts(...stores) {
 
 
 export {
-  $$typeofStoreContext
+  $$typeofStoreContext,
+  createStoreContexts
 }
-
-export default createStoreContexts

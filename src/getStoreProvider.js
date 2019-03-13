@@ -35,4 +35,6 @@ function getStoreProvider(...storeContexts) {
   }
 }
 
-export default getStoreProvider
+export {
+  getStoreProvider
+}

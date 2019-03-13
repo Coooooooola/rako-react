@@ -1,2 +1,2 @@
-export {default as createStoreContexts} from './createStoreContexts'
-export {default as getStoreProvider} from './getStoreProvider'
+export {createStoreContexts} from './createStoreContexts'
+export {getStoreProvider} from './getStoreProvider'
