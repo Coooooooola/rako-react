@@ -1,6 +1,6 @@
 import Store from 'rako'
 import {createContext} from 'react'
-import getStoreProvider from './getStoreProvider'
+import {getStoreProvider} from './getStoreProvider'
 
 const $$typeofStoreContext = Symbol ? Symbol('store-context') : {}
 
