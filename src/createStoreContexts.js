@@ -2,7 +2,6 @@ import Store from 'rako'
 import {createContext} from 'react'
 import {getStoreProvider} from './getStoreProvider'
 
-const $$typeofStoreContext = Symbol ? Symbol('store-context') : {}
 
 function createStoreContexts(...stores) {
   if (!stores.every(store => store instanceof Store)) {
@@ -11,20 +10,29 @@ function createStoreContexts(...stores) {
   return stores.map(({getState, getActions, subscribe}) => {
     const actions = getActions()
 
-    const storeContext = Object.assign(createContext(), {
-      $$typeofStoreContext,
-      StoreProvider: null,
-      _Provider: null,
-      _storeValue: {value: Object.assign({}, getState(), actions)},
-      _updates: [],
-    })
-    storeContext._Provider = storeContext.Provider
+    const storeContext = createContext()
+    const updates = []
+    const rakoReact = {
+      Provider: storeContext.Provider,
+      state: getState(),
+      actions,
+      lazyValue: null,
+      updates
+    }
     storeContext.Provider = undefined
+    storeContext.__rakoReact = rakoReact
     storeContext.StoreProvider = getStoreProvider(storeContext)
 
     subscribe(function renderStoreContext(state) {
-      storeContext._storeValue = {value: Object.assign({}, state, actions)}
-      for (const update of storeContext._updates) {
+      if (!updates.length) {
+        rakoReact.state = state
+        rakoReact.lazyValue = null
+        return
+      }
+
+      rakoReact.state = null
+      rakoReact.lazyValue = {value: Object.assign({}, state, actions)}
+      for (const update of updates) {
         update(bool => !bool)
       }
     })
@@ -34,6 +42,5 @@ function createStoreContexts(...stores) {
 
 
 export {
-  $$typeofStoreContext,
   createStoreContexts
 }

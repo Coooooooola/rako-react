@@ -1,39 +1,54 @@
 import {createElement, useState, useLayoutEffect, useMemo} from 'react'
-import {$$typeofStoreContext} from './createStoreContexts'
+
+
+const EMPTY_ARRAY = []
 
 function getStoreProvider(...storeContexts) {
-  if (storeContexts.some(sc => sc.$$typeofStoreContext !== $$typeofStoreContext)) {
+  if (!storeContexts.every(sc => sc != null && typeof sc === 'object' && __rakoReact in sc)) {
     throw new TypeError('Expected every `storeContext` to be a `StoreContext`.')
   }
+  const rakoReacts = storeContexts.map(sc => sc.__rakoReact)
+
+  function getLazyValues() {
+    return rakoReacts.map(rr => {
+      if (rr.lazyValue === null) {
+        rr.lazyValue = {value: Object.assign({}, rr.state, rr.action)}
+      }
+      return rr.lazyValue
+    })
+  }
+
   return function StoreProvider({children}) {
     const [, update] = useState(true)
-    const storeValues = useMemo(() => storeContexts.map(sc => sc._storeValue), [])
+
+    const lazyValues = useMemo(getLazyValues, EMPTY_ARRAY)
 
     useLayoutEffect(function connectStoreContext() {
-      for (const {_updates} of storeContexts) {
-        _updates.push(update)
+      for (const {updates} of rakoReacts) {
+        updates.push(update)
       }
 
-      if (storeContexts.some((sc, i) => sc._storeValue !== storeValues[i])) {
+      if (rakoReacts.some((rr, i) => rr.lazyValue !== lazyValues[i])) {
         update(bool => !bool)
       }
-      storeValues.length = 0
+      lazyValues.length = 0
 
       return function cleanStoreContext() {
-        for (const {_updates} of storeContexts) {
-          _updates.splice(_updates.indexOf(update), 1)
+        for (const {updates} of rakoReacts) {
+          updates.splice(updates.indexOf(update), 1)
         }
       }
-    }, [])
+    }, EMPTY_ARRAY)
 
     let ret = children
-    for (let i = storeContexts.length - 1; i >= 0; i--) {
-      const sc = storeContexts[i]
-      ret = createElement(sc._Provider, sc._storeValue, ret)
+    for (let i = rakoReacts.length - 1; i >= 0; i--) {
+      const rr = rakoReacts[i]
+      ret = createElement(rr.Provider, rr.lazyValue, ret)
     }
     return ret
   }
 }
+
 
 export {
   getStoreProvider
