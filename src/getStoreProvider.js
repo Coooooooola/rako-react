@@ -12,7 +12,7 @@ function getStoreProvider(...storeContexts) {
   function getLazyValues() {
     return rakoReacts.map(rr => {
       if (rr.lazyValue === null) {
-        rr.lazyValue = {value: Object.assign({}, rr.state, rr.action)}
+        rr.lazyValue = {value: Object.assign({}, rr.state, rr.actions)}
       }
       return rr.lazyValue
     })
