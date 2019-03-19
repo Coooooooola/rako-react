@@ -4,7 +4,7 @@ import {createElement, useState, useLayoutEffect, useMemo} from 'react'
 const EMPTY_ARRAY = []
 
 function getStoreProvider(...storeContexts) {
-  if (!storeContexts.every(sc => sc != null && typeof sc === 'object' && __rakoReact in sc)) {
+  if (!storeContexts.every(sc => sc != null && typeof sc === 'object' && '__rakoReact' in sc)) {
     throw new TypeError('Expected every `storeContext` to be a `StoreContext`.')
   }
   const rakoReacts = storeContexts.map(sc => sc.__rakoReact)
