@@ -9,33 +9,28 @@ function getStoreProvider(...storeContexts) {
   }
   const rakoReacts = storeContexts.map(sc => sc.__rakoReact)
 
-  function getLazyValues() {
-    return rakoReacts.map(rr => {
-      if (rr.lazyValue === null) {
-        rr.lazyValue = {value: Object.assign({}, rr.state, rr.actions)}
-      }
-      return rr.lazyValue
-    })
+  function getValues() {
+    return rakoReacts.map(rr => rr.getValue())
   }
 
   return function StoreProvider({children}) {
     const [, update] = useState(true)
 
-    const lazyValues = useMemo(getLazyValues, EMPTY_ARRAY)
+    const values = useMemo(getValues, EMPTY_ARRAY)
 
     useLayoutEffect(function connectStoreContext() {
-      for (const {updates} of rakoReacts) {
-        updates.push(update)
+      for (const rr of rakoReacts) {
+        rr.subscribe(update)
       }
 
-      if (rakoReacts.some((rr, i) => rr.lazyValue !== lazyValues[i])) {
+      if (rakoReacts.some((rr, i) => rr.getValue() !== values[i])) {
         update(bool => !bool)
       }
-      lazyValues.length = 0
+      values.length = 0
 
       return function cleanStoreContext() {
-        for (const {updates} of rakoReacts) {
-          updates.splice(updates.indexOf(update), 1)
+        for (const rr of rakoReacts) {
+          rr.unsubscribe(update)
         }
       }
     }, EMPTY_ARRAY)
@@ -43,7 +38,7 @@ function getStoreProvider(...storeContexts) {
     let ret = children
     for (let i = rakoReacts.length - 1; i >= 0; i--) {
       const rr = rakoReacts[i]
-      ret = createElement(rr.Provider, rr.lazyValue, ret)
+      ret = createElement(rr.Provider, rr.getValue(), ret)
     }
     return ret
   }
