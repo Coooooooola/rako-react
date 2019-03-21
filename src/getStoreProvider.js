@@ -19,9 +19,7 @@ function getStoreProvider(...storeContexts) {
     const values = useMemo(getValues, EMPTY_ARRAY)
 
     useLayoutEffect(function connectStoreContext() {
-      for (const rr of rakoReacts) {
-        rr.subscribe(update)
-      }
+      const unsubscribes = rakoReacts.map(rr => rr.subscribe(update))
 
       if (rakoReacts.some((rr, i) => rr.getValue() !== values[i])) {
         update(bool => !bool)
@@ -29,8 +27,8 @@ function getStoreProvider(...storeContexts) {
       values.length = 0
 
       return function cleanStoreContext() {
-        for (const rr of rakoReacts) {
-          rr.unsubscribe(update)
+        for (const unsubscribe of unsubscribes) {
+          unsubscribe()
         }
       }
     }, EMPTY_ARRAY)

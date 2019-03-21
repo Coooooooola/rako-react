@@ -31,14 +31,16 @@ function createStoreContexts(...stores) {
       },
       subscribe(update) {
         updates.push(update)
-      },
-      unsubscribe(update) {
-        const index = updates.indexOf(update)
-        if (callStackDepth) {
-          updates[index] = null
-          hasNullInUpdates = true
-        } else {
-          updates.splice(index, 1)
+
+        const border = updates.length
+        return function unsubscribe() {
+          const index = updates.lastIndexOf(update, border)
+          if (callStackDepth) {
+            updates[index] = null
+            hasNullInUpdates = true
+          } else {
+            updates.splice(index, 1)
+          }
         }
       }
     }
