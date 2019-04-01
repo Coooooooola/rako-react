@@ -18,6 +18,6 @@ After you open the link of **codeSandbox** above, because **codeSandbox** doesn'
 
 ## API
 
-#### `createStoreContexts(...stores: Array<Store>): Array<StoreContext>`
+`createStoreContexts(...stores: Array<Store>): Array<StoreContext>`
 
-#### `getStoreProvider(...storeContexts: Array<StoreContext>): StoreProvider`
+`getStoreProvider(...storeContexts: Array<StoreContext>): StoreProvider`

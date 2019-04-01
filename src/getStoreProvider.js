@@ -1,12 +1,10 @@
 import {createElement, useState, useLayoutEffect, useMemo} from 'react'
 
 
-const _hasOwnProperty = Object.hasOwnProperty
-
 const EMPTY_ARRAY = []
 
 function getStoreProvider(...storeContexts) {
-  if (!storeContexts.every(sc => sc != null && typeof sc === 'object' && _hasOwnProperty.call(sc, '__rakoReact'))) {
+  if (!storeContexts.every(sc => sc != null && typeof sc === 'object' && sc.hasOwnProperty('__rakoReact'))) {
     throw new TypeError('Expected every `storeContext` to be a `StoreContext`.')
   }
   const rakoReacts = storeContexts.map(sc => sc.__rakoReact)
